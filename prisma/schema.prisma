@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email          String  @unique
+  hashedPassword String
+  image          String?
+  firstName      String
+  lastName       String
+  userName       String  @unique
+  location       String
+  telNum         String
+  role           String
+
+  @@map("users")
+}
+
+model Diplome {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  titre         String
+  etablissement String
+  dateObtention String
+  domaine       String
+  parentId      String   @db.ObjectId
+  parent        Candidat @relation(fields: [parentId], references: [id])
+
+  @@map("diplomes")
+}
+
+model Certificat {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  titre         String
+  etablissement String
+  dateObtention String
+  domaine       String
+  parentId      String @db.ObjectId
+  // parent        Candidat @relation(fields: [parentId], references: [id])
+
+  @@map("certificats")
+}
+
+model Skill {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  parentId   String   @db.ObjectId
+  parent     Candidat @relation(fields: [parentId], references: [id])
+  skillUsers Int?
+
+  @@map("skills")
+}
+
+model Candidat {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email          String    @unique
+  hashedPassword String
+  bio            String
+  image          String?
+  firstName      String
+  lastName       String
+  userName       String    @unique
+  ville          String
+  address        String
+  zip            String
+  telNum         String
+  role           String    @default("candidat")
+  diplomes       Diplome[]
+  // certificats    Certificat[]
+  skills         Skill[]
+  cv             String?
+  facebookLink   String?
+  websiteLink    String?
+  linkedInLink   String?
+
+  commentairesNotification Boolean?
+  offresNotification       Boolean?
+  pushToutNotification     Boolean?
+  pushEmailNotification    Boolean?
+  pushAucuneNotification   Boolean?
+
+  @@map("candidats")
+}
+
+model Recruteur {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email          String  @unique
+  hashedPassword String
+  image          String?
+  firstName      String
+  lastName       String
+  userName       String  @unique
+  location       String
+  telNum         String
+  role           String
+  poste          String
+  departement    String
+
+  @@map("recruteurs")
+}
+
+// model Contact {
+//   id       String   @id @default(auto()) @map("_id") @db.ObjectId
+//   facebook String?
+//   linkedIn String?
+//   siteweb  String?
+//   parentId String   @db.ObjectId
+//   parent   Candidat @relation(fields: [parentId], references: [id])
+
+//   @@map("contacts")
+// }
